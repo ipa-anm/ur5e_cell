@@ -16,6 +16,7 @@
   <depend>behaviortree_cpp_v3</depend>
   <depend>aruco_ros</depend>
   <depend>aruco_msgs</depend>
+  <depend>color_pose_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

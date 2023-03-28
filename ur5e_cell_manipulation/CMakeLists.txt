@@ -17,6 +17,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(aruco_msgs REQUIRED)
+find_package(color_pose_msgs REQUIRED)
 
 add_executable(robot_program_node src/robot_program_node.cpp)
 target_include_directories(robot_program_node PUBLIC
@@ -32,6 +33,7 @@ ament_target_dependencies(
   "behaviortree_cpp_v3"
   "aruco_ros"
   "aruco_msgs"
+  "color_pose_msgs"
   "tf2"
   "tf2_eigen"
   "tf2_geometry_msgs"
