@@ -13,7 +13,7 @@
 #include "ur5e_cell_manipulation/detect_aruco_node.hpp"
 #include "ur5e_cell_manipulation/detect_color_node.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
-
+#include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
 class ManipulationBehaviorManager
 {
 protected:
@@ -35,7 +35,7 @@ public:
     factory_ = std::make_shared<BT::BehaviorTreeFactory>();
     node_->declare_parameter(
         "behavior_file",
-        ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/behavior.xml"));
+        ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/behavior2.xml"));
   }
 
   void start_behaviour()
@@ -84,12 +84,12 @@ public:
     std::string file_name = node_->get_parameter("behavior_file").as_string();
     RCLCPP_INFO(node_->get_logger(), "Loading behavior from %s", file_name.c_str());
     tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromFile(file_name, config_->blackboard));
-
+    BT::PublisherZMQ publisher_zmq(*tree_);
     while (tree_->rootNode()->status() != BT::NodeStatus::SUCCESS ||
            tree_->rootNode()->status() != BT::NodeStatus::FAILURE)
     {
       tree_->rootNode()->executeTick();
-      rclcpp::sleep_for(std::chrono::milliseconds(1));
+      rclcpp::sleep_for(std::chrono::milliseconds(3));
     }
   }
 };
