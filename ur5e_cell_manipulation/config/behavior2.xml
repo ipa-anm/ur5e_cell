@@ -51,6 +51,8 @@
             <PlanMotion start_state="{pre_3_pose}" goal_state="{start_pose}" planning_frame="world" moving_link="tool_tip" trajectory="{from_pre_3_pose_to_start_pose}" />
             <ExecuteMotion trajectory="{from_initial_pose_to_start_pose}" />
             <ExecuteMotion trajectory="{from_start_pose_to_pre_1_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false"/>
+
                 <Sequence name="execute_sequence">
                     <SubTree ID="pick_from_white_cube_holder1" __shared_blackboard="true"/>
                     <ExecuteMotion trajectory="{from_pre_1_pose_to_pre_2_pose}" />

@@ -15,10 +15,10 @@ def generate_launch_description():
         ),
         launch_arguments={
             "ur_type": "ur5e",
-            "use_fake_hardware": "true",
+            "use_fake_hardware": "false",
             "initial_joint_controller": "joint_trajectory_controller",
             "activate_joint_controller": "true",
-            "robot_ip": "xxx.yyy.zzz.vvv",
+            "robot_ip": "192.168.56.2",
             "description_package": "ur5e_cell_description",
             "description_file": "workcell.urdf.xacro",
             "launch_rviz": "true",

@@ -89,7 +89,7 @@ public:
            tree_->rootNode()->status() != BT::NodeStatus::FAILURE)
     {
       tree_->rootNode()->executeTick();
-      rclcpp::sleep_for(std::chrono::milliseconds(3));
+      rclcpp::sleep_for(std::chrono::milliseconds(1));
     }
   }
 };

@@ -155,6 +155,7 @@ public:
     {
       RCLCPP_INFO(node_->get_logger(), "Gripper command executed.");
       timer_->cancel();
+      rclcpp::sleep_for(std::chrono::milliseconds(200));
       return BT::NodeStatus::SUCCESS;
     }
     if (error_)

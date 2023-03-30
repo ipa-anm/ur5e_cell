@@ -3,13 +3,13 @@
     <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
             <SetPose
-                positionx="0.0"
-                positiony="0.60"
-                positionz="0.5"
-                roll="3.14"
+                positionx="-0.17"
+                positiony="0.0"
+                positionz="1.5"
+                roll="-3.14"
                 pitch="0.0"
-                yaw="0.0"
-                planning_frame="base_link"
+                yaw="1.57"
+                planning_frame="world"
                 moving_link="tool_tip"
                 robot_state="{start_pose}" />
             <SetPose
@@ -62,20 +62,6 @@
                 planning_frame="world"
                 moving_link="tool_tip"
                 robot_state="{pick_2_pose}" />
-            <GetPickFromColor
-                pick-z-offset="0.04" 
-                pre-z-offset="0.10" 
-                roll="-3.14" 
-                pitch="0.0" 
-                yaw="1.57" 
-                pick_robot_state="{pick_pose_color}"/>
-            <GetPickFromColor
-                pick-z-offset="0.04" 
-                pre-z-offset="0.10" 
-                roll="-3.14" 
-                pitch="0.0" 
-                yaw="1.57" 
-                pre_robot_state="{pre_pose_color}"/>
             <PlanMotion
                 goal_state="{start_pose}"
                 planning_frame="world"
@@ -123,12 +109,29 @@
                 planning_frame="world"
                 moving_link="tool_tip"
                 trajectory="{from_pre_2_pose_to_pre_1_pose}" />
+            <ExecuteMotion trajectory="{from_initial_pose_to_start_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false"/>          
+            <GetPickFromColor
+                pick-z-offset="0.00" 
+                pre-z-offset="0.10" 
+                roll="-3.14" 
+                pitch="0.0" 
+                yaw="1.57" 
+                pre_robot_state="{pre_pose_color}"/>
             <PlanMotion
                 start_state="{start_pose}"
                 goal_state="{pre_pose_color}"
                 planning_frame="world"
                 moving_link="tool_tip"
                 trajectory="{from_start_pose_to_pre_pose_color}" />
+            <ExecuteMotion trajectory="{from_start_pose_to_pre_pose_color}" />
+            <GetPickFromColor
+                pick-z-offset="0.00" 
+                pre-z-offset="0.10" 
+                roll="-3.14" 
+                pitch="0.0" 
+                yaw="1.57" 
+                pick_robot_state="{pick_pose_color}"/>
             <PlanMotion
                 start_state="{pre_pose_color}"
                 goal_state="{pick_pose_color}"
@@ -148,18 +151,13 @@
                 moving_link="tool_tip"
                 trajectory="{from_pick_pose_color_to_pre_1_pose}" />
             <GripperAction action="open" pin_0="0" pin_1="1" fake="false"/>
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pick_pose_color}" />
             <GripperAction action="close" pin_0="0" pin_1="1" fake="false"/>
-            <ExecuteMotion trajectory="{from_initial_pose_to_start_pose}" />
-            <ExecuteMotion trajectory="{from_start_pose_to_pre_pose_color}" />
+            <ExecuteMotion trajectory="{from_pick_pose_color_to_pre_pose_color}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pick_pose_color}" />
             <GripperAction action="open" pin_0="0" pin_1="1" fake="false"/>
-            <Repeat num_cycles="100">
-                <Sequence name="execute_sequence">
-                    <ExecuteMotion trajectory="{from_pre_pose_color to_pick_pose_color}" />
-                    <GripperAction action="close" pin_0="0" pin_1="1" fake="false"/>
-                    <ExecuteMotion trajectory="{from_pick_pose_color_to_pre_pose_color}" />
-                
-                </Sequence>
-            </Repeat>
+            <ExecuteMotion trajectory="{from_pick_pose_color_to_pre_pose_color}" />
+
         </Sequence>
     </BehaviorTree>
 </root>
