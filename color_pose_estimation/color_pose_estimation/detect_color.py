@@ -39,10 +39,7 @@ def detect(img):
             l_rect = rect
     x, y, w, h = l_rect
 
-    # draw rectangel on image and display
-    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 255), 2)
-    #cv2.waitKey(0)
-   # cv2.imshow("mask", img)
+  
 
     key = cv2.waitKey(1)
 

@@ -17,6 +17,7 @@ import numpy as np
 import sys
 import cv2 as cv2
 from ament_index_python.packages import get_package_share_directory
+from pathlib import Path
 
 def draw_registration_result(source, target, transformation):
     source_temp = copy.deepcopy(source)
@@ -48,7 +49,10 @@ def prepare_dataset(target, voxel_size):
     print(":: Load two point clouds")
     #o3d.visualization.draw_geometries([target])
 
-    source = o3d.io.read_point_cloud(get_package_share_directory("color_pose_estimation") +"/../../../../src/color_pose_estimation/utils/cube2.ply")
+    path = Path(get_package_share_directory("color_pose_estimation")).joinpath("cube2.ply")
+    print(path)
+
+    source = o3d.io.read_point_cloud(str(path))
 
     print(type(source))
     print(type(target))
@@ -80,23 +84,24 @@ def execute_global_registration(source_down, target_down, source_fpfh,
                 0.2),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
                 distance_threshold)
-        ], o3d.pipelines.registration.RANSACConvergenceCriteria(10000, 0.99))
+        ], o3d.pipelines.registration.RANSACConvergenceCriteria(10000, 0.999))
     return result
 
 
 def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, result_ransac):
-    distance_threshold = voxel_size * 20
+    distance_threshold = voxel_size * 30
     print(":: Point-to-plane ICP registration is applied on original point")
     print("   clouds to refine the alignment. This time we use a strict")
     print("   distance threshold %.3f." % distance_threshold)
     result = o3d.pipelines.registration.registration_icp(
         source, target, distance_threshold, result_ransac.transformation,
-        o3d.pipelines.registration.TransformationEstimationPointToPlane())
+        o3d.pipelines.registration.TransformationEstimationPointToPlane(), 
+        o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=100))
     return result
 
 
 def register(target):
-    voxel_size = 0.8  # means 40 cm for this dataset
+    voxel_size = 0.05  # means 40 cm for this dataset
 
     source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(target,
         voxel_size)
