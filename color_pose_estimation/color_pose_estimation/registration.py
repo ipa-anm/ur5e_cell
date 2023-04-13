@@ -29,16 +29,13 @@ def draw_registration_result(source, target, transformation):
 
 
 def preprocess_point_cloud(pcd, voxel_size):
-    print(":: Downsample with a voxel size %.3f." % voxel_size)
     pcd_down = pcd.voxel_down_sample(voxel_size)
 
     radius_normal = voxel_size * 2
-    print(":: Estimate normal with search radius %.3f." % radius_normal)
     pcd_down=pcd
     pcd_down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
 
     radius_feature = voxel_size * 5
-    print(":: Compute FPFH feature with search radius %.3f." % radius_feature)
     pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
         pcd_down,
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -46,7 +43,6 @@ def preprocess_point_cloud(pcd, voxel_size):
 
 
 def prepare_dataset(target, voxel_size):
-    print(":: Load two point clouds")
     #o3d.visualization.draw_geometries([target])
 
     path = Path(get_package_share_directory("color_pose_estimation")).joinpath("cube2.ply")
@@ -54,8 +50,7 @@ def prepare_dataset(target, voxel_size):
 
     source = o3d.io.read_point_cloud(str(path))
 
-    print(type(source))
-    print(type(target))
+
     #bbox = o3d.geometry.AxisAlignedBoundingBox(min_bound=(0, 0, 0), max_bound=(10, 30, 10))
     #target = target.crop(bbox)
 
@@ -72,9 +67,7 @@ def prepare_dataset(target, voxel_size):
 def execute_global_registration(source_down, target_down, source_fpfh,
                                 target_fpfh, voxel_size):
     distance_threshold = voxel_size * 50
-    print(":: RANSAC registration on downsampled point clouds.")
-    print("   Since the downsampling voxel size is %.3f," % voxel_size)
-    print("   we use a liberal distance threshold %.3f." % distance_threshold)
+
     result = o3d.pipelines.registration.registration_ransac_based_on_feature_matching(
         source_down, target_down, source_fpfh, target_fpfh, True,
         distance_threshold,

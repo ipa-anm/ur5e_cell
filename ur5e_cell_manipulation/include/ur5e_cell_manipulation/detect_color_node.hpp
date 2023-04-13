@@ -1,7 +1,6 @@
 #ifndef DETECT_COLOR_NODE_HPP
 #define DETECT_COLOR_NODE_HPP
 
-
 #include <chrono>
 
 #include <rclcpp/rclcpp.hpp>
@@ -14,14 +13,18 @@
 #include <behaviortree_cpp_v3/action_node.h>
 #include <color_pose_msgs/msg/color_pose.hpp>
 #include <atomic>
+#include <iostream>
+#include <fstream>
+
 
 class DetectColorNode : public BT::StatefulActionNode
 {
 protected:
+  std::atomic_int required_poses_ = 3;
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};  
-  //color_pose_msgs::msg::ColorPose final_pose_;
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_{ nullptr };
+  // color_pose_msgs::msg::ColorPose final_pose_;
   std::atomic_int counter_;
   std::atomic_bool error_;
   rclcpp::TimerBase::SharedPtr timer_;
@@ -29,13 +32,12 @@ protected:
   moveit_cpp::PlanningComponentPtr planning_component_;
   std::string planning_group_;
 
-
-
 public:
   DetectColorNode(const std::string& name, const BT::NodeConfiguration& config) : BT::StatefulActionNode(name, config)
   {
     node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     RCLCPP_INFO(node_->get_logger(), "Initialising Execute Node.");
+    sleep(1.0);
 
     // pose_ = node_->create_subscription<color_pose_msgs::msg::ColorPose>(
     //     "color_pose_estimation/color_pose", 30,
@@ -43,6 +45,9 @@ public:
     moveit_cpp_ = config.blackboard->get<moveit_cpp::MoveItCppPtr>("moveit_cpp");
     planning_component_ = config.blackboard->get<moveit_cpp::PlanningComponentPtr>("planning_component");
     planning_group_ = config.blackboard->get<std::string>("planning_group");
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+
   }
 
   // void getPoseCallback(const color_pose_msgs::msg::ColorPose& msg)
@@ -70,19 +75,18 @@ public:
   BT::NodeStatus onStart() override
   {
     RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
+
     return BT::NodeStatus::RUNNING;
+
   }
+
+
 
   BT::NodeStatus onRunning() override
   {
-    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-    
-
     RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
 
-    geometry_msgs::msg::PoseStamped pre_pose, 
-    pick_pose, transformed_pose, final_pose;
+    geometry_msgs::msg::PoseStamped pre_pose, pick_pose, transformed_pose, final_pose;
     tf2::Quaternion q;
 
     transformed_pose.pose.position.x = 0;
@@ -96,18 +100,52 @@ public:
     std::string toFrameRel = "world";
     std::string fromFrameRel = "box_frame";
 
-    geometry_msgs::msg::TransformStamped t; 
-    try {
-        t = tf_buffer_->lookupTransform(
-          toFrameRel, fromFrameRel,
-          tf2::TimePointZero, 
-          tf2::durationFromSec(2));
-      } catch (const tf2::TransformException & ex) {
-        RCLCPP_INFO(node_->get_logger(), "Could not transform %s to %s: %s", toFrameRel.c_str(), fromFrameRel.c_str(), ex.what());
-      }
-    
+    geometry_msgs::msg::TransformStamped t, t_sum;
 
-    tf2::doTransform(transformed_pose, final_pose, t);
+
+    t.transform.translation.x = 0; 
+    t.transform.translation.y = 0; 
+    t.transform.translation.z = 0; 
+    t_sum.transform.translation.x = 0; 
+    t_sum.transform.translation.y = 0; 
+    t_sum.transform.translation.z = 0; 
+
+    RCLCPP_INFO(node_->get_logger(), "Created_transformation.");
+
+    for (int i = 0; i < required_poses_; i++)
+    {
+      try
+      {
+        rclcpp::sleep_for(std::chrono::milliseconds(200));
+
+        t = tf_buffer_->lookupTransform(toFrameRel, fromFrameRel, tf2::TimePointZero, tf2::durationFromSec(1));
+
+        RCLCPP_INFO(node_->get_logger(), "Counter: %d", i);
+
+        t_sum.transform.translation.x = t_sum.transform.translation.x + t.transform.translation.x;
+        t_sum.transform.translation.y = t_sum.transform.translation.y + t.transform.translation.y;
+        t_sum.transform.translation.z = t_sum.transform.translation.z + t.transform.translation.z;
+      }
+      catch (tf2::TransformException& ex)
+      {
+        RCLCPP_INFO(node_->get_logger(), "Exception: %s", ex.what());
+        i = i-1; 
+      }
+      RCLCPP_INFO(node_->get_logger(), "Sum_Transformation: %s", geometry_msgs::msg::to_yaml(t_sum.transform).c_str());
+
+    }
+
+    t_sum.transform.translation.x = t_sum.transform.translation.x / required_poses_.load();
+    t_sum.transform.translation.y = t_sum.transform.translation.y / required_poses_.load();
+    t_sum.transform.translation.z = t_sum.transform.translation.z / required_poses_.load();
+    std::ofstream file("plot.csv", std::ios::app);    
+    std::string newLine = std::to_string(t_sum.transform.translation.x) + "," + std::to_string(t_sum.transform.translation.y) + "," + std::to_string(t_sum.transform.translation.z);
+    file << newLine<<std::endl;
+    file.close();
+
+    RCLCPP_INFO(node_->get_logger(), "Sum_Transformation_AFTER: %s", geometry_msgs::msg::to_yaml(t_sum.transform).c_str());
+
+    tf2::doTransform(transformed_pose, final_pose, t_sum);
 
     q.setRPY(getInput<double>("roll").value(), getInput<double>("pitch").value(), getInput<double>("yaw").value());
     pre_pose.pose.orientation = tf2::toMsg(q);
@@ -115,18 +153,19 @@ public:
 
     pre_pose.pose.position.x = final_pose.pose.position.x;
     pre_pose.pose.position.y = final_pose.pose.position.y;
-    pre_pose.pose.position.z = 1.2;
+    pre_pose.pose.position.z = 1.2; 
 
     pick_pose.pose.position.x = final_pose.pose.position.x;
     pick_pose.pose.position.y = final_pose.pose.position.y;
-    pick_pose.pose.position.z = 1.067;
-    //RCLCPP_INFO(node_->get_logger(), "Final_Pose: %s", geometry_msgs::msg::to_yaml(final_pose).c_str());
+    pick_pose.pose.position.z = 1.062;
+    // RCLCPP_INFO(node_->get_logger(), "Final_Pose: %s", geometry_msgs::msg::to_yaml(final_pose).c_str());
     RCLCPP_INFO(node_->get_logger(), "Pre_Pose: %s", geometry_msgs::msg::to_yaml(pre_pose.pose).c_str());
 
     auto pick_state = moveit_cpp_->getCurrentState();
     auto pre_state = moveit_cpp_->getCurrentState();
     auto jmg1 = pick_state->getJointModelGroup(planning_group_);
     auto jmg2 = pre_state->getJointModelGroup(planning_group_);
+
 
     if (!pick_state->setFromIK(jmg1, pick_pose.pose, 10))
     {

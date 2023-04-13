@@ -19,9 +19,8 @@ def generate_launch_description():
     realsence_tf_node = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        arguments=["-0.045", "-0.06234", "-0.0165192", "0.517004", "-0.501707", "0.496051","0.484696", "tool0", "camera_link"]
+        arguments=["-0.016018", "-0.0554009", "-0.0228963", "-0.498002", "0.523098", "-0.484214","-0.493861", "tool0", "camera_link"]
     )
-
 
     aruco_marker_publisher_params = {
         'image_is_rectified': True,
