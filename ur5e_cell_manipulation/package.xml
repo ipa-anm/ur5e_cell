@@ -8,6 +8,7 @@
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>rclcpp_components</build_depend>
 
   <depend>moveit_msgs</depend>
   <depend>moveit</depend>
@@ -17,6 +18,8 @@
   <depend>aruco_ros</depend>
   <depend>aruco_msgs</depend>
   <depend>color_pose_msgs</depend>
+  <depend>rclcpp</depend>
+  <exec_depend>rclcpp_components</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
