@@ -13,6 +13,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ColorPose.msg"
+  "msg/ColorPoseArray.msg"
   DEPENDENCIES std_msgs geometry_msgs
 )
 

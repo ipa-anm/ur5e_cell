@@ -45,7 +45,7 @@ def preprocess_point_cloud(pcd, voxel_size):
 def prepare_dataset(target, voxel_size):
     #o3d.visualization.draw_geometries([target])
 
-    path = Path(get_package_share_directory("color_pose_estimation")).joinpath("cube2.ply")
+    path = Path(get_package_share_directory("color_pose_estimation")).joinpath("utils/cube2.ply")
     print(path)
 
     source = o3d.io.read_point_cloud(str(path))
@@ -83,9 +83,6 @@ def execute_global_registration(source_down, target_down, source_fpfh,
 
 def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, result_ransac):
     distance_threshold = voxel_size * 30
-    print(":: Point-to-plane ICP registration is applied on original point")
-    print("   clouds to refine the alignment. This time we use a strict")
-    print("   distance threshold %.3f." % distance_threshold)
     result = o3d.pipelines.registration.registration_icp(
         source, target, distance_threshold, result_ransac.transformation,
         o3d.pipelines.registration.TransformationEstimationPointToPlane(), 
@@ -95,23 +92,28 @@ def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, re
 
 def register(target):
     voxel_size = 0.05  # means 40 cm for this dataset
+    start = time.time()
 
     source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(target,
         voxel_size)
     result_ransac = execute_global_registration(source_down, target_down,
                                                 source_fpfh, target_fpfh,
                                                 voxel_size)
-    print(result_ransac)
+    #print(result_ransac)
     mesh = o3d.geometry.TriangleMesh.create_coordinate_frame()
 
     #draw_registration_result(source_down, target_down,
     #                         result_ransac.transformation)
     result_icp = refine_registration(
         source, target, source_fpfh, target_fpfh, voxel_size, result_ransac)
-    print(result_icp)
+    #print(result_icp)
     # Transformation value can be used to calculate pose
-    print(result_icp.transformation)
+    #print(result_icp.transformation)
+    end = time.time()
+    print("this is registration time:")
+    print(end-start)
     #draw_registration_result(source, target, result_icp.transformation)
-    return result_icp.transformation
+    return (result_icp.transformation, target_down, source_down, source.transform(result_icp.transformation))
+
 
 

@@ -1,3 +1,6 @@
+
+import glob
+import os
 from setuptools import setup
 
 package_name = 'color_pose_estimation'
@@ -9,7 +12,10 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
+        ('share/' + package_name + '/utils', glob.glob(os.path.join('utils', '*.ply'))),
         ('share/' + package_name, ['package.xml']),
+        ('share/color_pose_estimation/launch',
+            glob.glob(os.path.join('launch', '*launch.py'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,7 +26,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'color_pose_estimation = color_pose_estimation.color_pose_estimation:main'
+            'color_pose_estimation = color_pose_estimation.color_pose_estimation:main',
+            'color_pose_estimation_unique = color_pose_estimation.color_pose_estimation_unique:main',
         ],
     },
 )
