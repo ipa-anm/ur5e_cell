@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Sequence name="root_sequence">
+            <SetPose positionx="-0.07" positiony="0.00" positionz="1.35" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{start_pose}" />
+            <SetPose positionx="-0.17" positiony="0.163" positionz="1.063" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pick_1_pose}" />
+            <SetPose positionx="-0.17" positiony="-0.103" positionz="1.063" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pick_2_pose}" />
+            <SetPose positionx="0.005" positiony="-0.061" positionz="1.063" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pick_3_pose}" />
+            <SetPose positionx="0.006" positiony="0.124" positionz="1.063" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pick_4_pose}" />
+            <SetPose positionx="-0.310" positiony="0.036" positionz="1.063" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pick_5_pose}" />
+
+            <SetPose positionx="-0.17" positiony="0.163" positionz="1.15" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pre_1_pose}" />
+            <SetPose positionx="-0.17" positiony="-0.103" positionz="1.15" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pre_2_pose}" />
+            <SetPose positionx="0.005" positiony="-0.061" positionz="1.15" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pre_3_pose}" />
+            <SetPose positionx="0.006" positiony="0.124" positionz="1.15" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pre_4_pose}" />
+            <SetPose positionx="-0.310" positiony="0.036" positionz="1.15" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{pre_5_pose}" />
+            <PlanMotion goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_initial_pose_to_start_pose}" />
+            <PlanMotion start_state="{pick_1_pose}" goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_1_pose_to_start_pose}" />
+            <PlanMotion start_state="{pick_2_pose}" goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_2_pose_to_start_pose}" />
+            <PlanMotion start_state="{pick_3_pose}" goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_3_pose_to_start_pose}" />
+            <PlanMotion start_state="{pick_4_pose}" goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_4_pose_to_start_pose}" />
+            <PlanMotion start_state="{pick_5_pose}" goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_5_pose_to_start_pose}" />
+            <ExecuteMotion trajectory="{from_initial_pose_to_start_pose}" />
+            <GripperAction action="close" pin_0="0" pin_1="1" fake="false" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <SubTree ID="color_pick" __shared_blackboard="true" />
+            <SubTree ID="release_to_pick1_holder" __shared_blackboard="true" />
+            <SubTree ID="color_pick" __shared_blackboard="true" />
+            <SubTree ID="release_to_pick3_holder" __shared_blackboard="true" />
+            <SubTree ID="color_pick" __shared_blackboard="true" />
+            <SubTree ID="release_to_pick4_holder" __shared_blackboard="true" />
+            <SubTree ID="color_pick" __shared_blackboard="true" />
+            <SubTree ID="release_to_pick5_holder" __shared_blackboard="true" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="color_pick">
+        <Sequence name="execute color">
+            <GetPickFromColor
+                pick-z-offset="0.2"
+                pre-z-offset="0.2"
+                roll="-3.14"
+                pitch="0.0"
+                yaw="1.57"
+                pre_robot_state="{pre_pose_color}" />
+
+            <PlanMotion start_state="{start_pose}" goal_state="{pre_pose_color}"
+                planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_start_pose_to_pre_pose_color}" />
+            <ExecuteMotion trajectory="{from_start_pose_to_pre_pose_color}" />
+            <GetPickFromColor
+                pick-z-offset="0.2"
+                pre-z-offset="0.2"
+                roll="-3.14"
+                pitch="0.0"
+                yaw="1.57"
+                pick_robot_state="{pick_pose_color}" />
+            <PlanMotion start_state="{pick_pose_color}" goal_state="{pre_pose_color}"
+                planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_pose_color_to_pre_pose_color}" />
+            <PlanMotion start_state="{pre_pose_color}" goal_state="{pick_pose_color}"
+                planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_color_to_pick_pose_color}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pick_pose_color}" />
+            <GripperAction action="close" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_pose_color_to_pre_pose_color}" />
+        </Sequence>
+    </BehaviorTree>
+
+
+    <BehaviorTree ID="release_to_pick1_holder">
+        <Sequence name="execute pick1">
+            <PlanMotion
+                start_state="{pre_1_pose}"
+                goal_state="{pick_1_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_1_pose_to_pick_1_pose}" />
+            <PlanMotion
+                start_state="{pre_pose_color}"
+                goal_state="{pre_1_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_pose_color_to_pre_1_pose}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pre_1_pose}" />
+            <ExecuteMotion trajectory="{from_pre_1_pose_to_pick_1_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_1_pose_to_start_pose}" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="release_to_pick2_holder">
+        <Sequence name="execute pick2">
+            <PlanMotion
+                start_state="{pre_2_pose}"
+                goal_state="{pick_2_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_2_pose_to_pick_2_pose}" />
+            <PlanMotion
+                start_state="{pre_pose_color}"
+                goal_state="{pre_2_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_pose_color_to_pre_2_pose}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pre_2_pose}" />
+            <ExecuteMotion trajectory="{from_pre_2_pose_to_pick_2_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_2_pose_to_start_pose}" />
+        </Sequence>
+    </BehaviorTree>
+    <BehaviorTree ID="release_to_pick3_holder">
+        <Sequence name="execute pick3">
+            <PlanMotion
+                start_state="{pre_3_pose}"
+                goal_state="{pick_3_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_3_pose_to_pick_3_pose}" />
+            <PlanMotion
+                start_state="{pre_pose_color}"
+                goal_state="{pre_3_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_pose_color_to_pre_3_pose}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pre_3_pose}" />
+            <ExecuteMotion trajectory="{from_pre_3_pose_to_pick_3_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_3_pose_to_start_pose}" />
+        </Sequence>
+    </BehaviorTree>
+    <BehaviorTree ID="release_to_pick4_holder">
+        <Sequence name="execute pick4">
+            <PlanMotion
+                start_state="{pre_4_pose}"
+                goal_state="{pick_4_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_4_pose_to_pick_4_pose}" />
+            <PlanMotion
+                start_state="{pre_pose_color}"
+                goal_state="{pre_4_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_pose_color_to_pre_4_pose}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pre_4_pose}" />
+            <ExecuteMotion trajectory="{from_pre_4_pose_to_pick_4_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_4_pose_to_start_pose}" />
+        </Sequence>
+    </BehaviorTree>
+    <BehaviorTree ID="release_to_pick5_holder">
+        <Sequence name="execute pick5">
+            <PlanMotion
+                start_state="{pre_5_pose}"
+                goal_state="{pick_5_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_5_pose_to_pick_5_pose}" />
+            <PlanMotion
+                start_state="{pre_pose_color}"
+                goal_state="{pre_5_pose}"
+                planning_frame="world"
+                moving_link="tool_tip"
+                trajectory="{from_pre_pose_color_to_pre_5_pose}" />
+            <ExecuteMotion trajectory="{from_pre_pose_color_to_pre_5_pose}" />
+            <ExecuteMotion trajectory="{from_pre_5_pose_to_pick_5_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_pick_5_pose_to_start_pose}" />
+        </Sequence>
+    </BehaviorTree>
+
+
+</root>
