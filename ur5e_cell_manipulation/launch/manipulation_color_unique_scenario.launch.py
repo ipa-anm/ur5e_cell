@@ -7,10 +7,12 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
+
 def generate_launch_description():
-    
+
     moveit_config = (
-        MoveItConfigsBuilder("ur5e_workcell", package_name="ur5e_cell_moveit_config")
+        MoveItConfigsBuilder(
+            "ur5e_workcell", package_name="ur5e_cell_moveit_config")
         .robot_description(file_path="config/ur5e_workcell.urdf.xacro")
         .moveit_cpp(
             file_path=get_package_share_directory("ur5e_cell_manipulation")
@@ -27,6 +29,5 @@ def generate_launch_description():
         output="screen",
         parameters=[moveit_config.to_dict()],
     )
-    
 
     return LaunchDescription([moveit_cpp_node])
