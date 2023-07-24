@@ -37,7 +37,7 @@ public:
   {
     node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     RCLCPP_INFO(node_->get_logger(), "Initialising Execute Node.");
-    sleep(1.0);
+    sleep(0.5);
 
     // pose_ = node_->create_subscription<color_pose_msgs::msg::ColorPose>(
     //     "color_pose_estimation/color_pose", 30,
@@ -116,7 +116,7 @@ public:
     {
       try
       {
-        rclcpp::sleep_for(std::chrono::milliseconds(200));
+        rclcpp::sleep_for(std::chrono::milliseconds(100));
 
         t = tf_buffer_->lookupTransform(toFrameRel, fromFrameRel, tf2::TimePointZero, tf2::durationFromSec(1));
 

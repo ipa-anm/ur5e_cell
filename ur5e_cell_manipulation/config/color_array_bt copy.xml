@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Sequence name="root_sequence">
+            <SetPose positionx="-0.07" positiony="0.00" positionz="1.4" roll="-3.14" pitch="0.0"
+                yaw="1.57" planning_frame="world" moving_link="tool_tip" robot_state="{start_pose}" />
+            <PlanMotion goal_state="{start_pose}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_initial_pose_to_start_pose}" />
+            <GripperAction action="open" pin_0="0" pin_1="1" fake="false" />
+            <ExecuteMotion trajectory="{from_initial_pose_to_start_pose}" />                
+                
+                
+            <GetPickFromColor
+                pick-z-offset="0.2"
+                pre-z-offset="0.2"
+                roll="-3.14"
+                pitch="0.0"
+                yaw="1.57"
+                pick_green_state="{pick_pose_green}"
+                pre_green_state="{pre_pose_green}" 
+                release_green_state="{release_pose_green}" 
+                prerelease_green_state="{prerelease_pose_green}" 
+                pick_blue_state="{pick_pose_blue}"
+                pre_blue_state="{pre_pose_blue}" 
+                release_blue_state="{release_pose_blue}" 
+                prerelease_blue_state="{prerelease_pose_blue}" 
+                pick_red_state="{pick_pose_red}"
+                pre_red_state="{pre_pose_red}" 
+                release_red_state="{release_pose_red}" 
+                prerelease_red_state="{prerelease_pose_red}"  
+                pick_yellow_state="{pick_pose_yellow}"
+                pre_yellow_state="{pre_pose_yellow}" 
+                release_yellow_state="{release_pose_yellow}" 
+                prerelease_yellow_state="{prerelease_pose_yellow}" 
+                />
+            <PlanMotion start_state="{start_pose}" goal_state="{pre_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_start_pose_to_pre_pose_green}" />
+            <PlanMotion start_state="{pre_pose_green}" goal_state="{pick_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_green_to_pick_pose_green}" />
+            <PlanMotion start_state="{pick_pose_green}" goal_state="{pre_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_pose_green_to_pre_pose_green}" />
+            <PlanMotion start_state="{pre_pose_green}" goal_state="{prerelease_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_green_to_prerelease_pose_green}" />
+            <PlanMotion start_state="{prerelease_pose_green}" goal_state="{release_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerlease_pose_green_to_release_pose_green}" />
+            <PlanMotion start_state="{release_pose_green}" goal_state="{prerelease_pose_green}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_release_pose_green_to_prerelease_pose_green}" />
+
+            <PlanMotion start_state="{prerelease_pose_green}" goal_state="{pre_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerelease_pose_green_to_pre_pose_blue}" />
+            <PlanMotion start_state="{pre_pose_blue}" goal_state="{pick_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_blue_to_pick_pose_blue}" />
+            <PlanMotion start_state="{pick_pose_blue}" goal_state="{pre_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_pose_blue_to_pre_pose_blue}" />
+            <PlanMotion start_state="{pre_pose_blue}" goal_state="{prerelease_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_blue_to_prerelease_pose_blue}" />
+            <PlanMotion start_state="{prerelease_pose_blue}" goal_state="{release_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerlease_pose_blue_to_release_pose_blue}" />
+            <PlanMotion start_state="{release_pose_blue}" goal_state="{prerelease_pose_blue}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_release_pose_blue_to_prerelease_pose_blue}" />
+
+            <PlanMotion start_state="{prerelease_pose_blue}" goal_state="{pre_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerelease_pose_blue_to_pre_pose_red}" />
+            <PlanMotion start_state="{pre_pose_red}" goal_state="{pick_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_red_to_pick_pose_red}" />
+            <PlanMotion start_state="{pick_pose_red}" goal_state="{pre_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_pose_red_to_pre_pose_red}" />
+            <PlanMotion start_state="{pre_pose_red}" goal_state="{prerelease_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_red_to_prerelease_pose_red}" />
+            <PlanMotion start_state="{prerelease_pose_red}" goal_state="{release_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerlease_pose_red_to_release_pose_red}" />
+            <PlanMotion start_state="{release_pose_red}" goal_state="{prerelease_pose_red}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_release_pose_red_to_prerelease_pose_red}" />
+
+            <PlanMotion start_state="{prerelease_pose_red}" goal_state="{pre_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerelease_pose_red_to_pre_pose_yellow}" />
+            <PlanMotion start_state="{pre_pose_yellow}" goal_state="{pick_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_yellow_to_pick_pose_yellow}" />
+            <PlanMotion start_state="{pick_pose_yellow}" goal_state="{pre_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pick_pose_yellow_to_pre_pose_yellow}" />
+            <PlanMotion start_state="{pre_pose_yellow}" goal_state="{prerelease_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_pre_pose_yellow_to_prerelease_pose_yellow}" />
+            <PlanMotion start_state="{prerelease_pose_yellow}" goal_state="{release_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_prerlease_pose_yellow_to_release_pose_yellow}" />
+            <PlanMotion start_state="{release_pose_yellow}" goal_state="{prerelease_pose_yellow}" planning_frame="world"
+                moving_link="tool_tip" trajectory="{from_release_pose_yellow_to_prerelease_pose_yellow}" />
+
+
+            <ExecuteMotion trajectory="{from_start_pose_to_pre_pose_green}" />
+            <ExecuteMotion trajectory="{from_pre_pose_green_to_pick_pose_green}" />
+            <ExecuteMotion trajectory="{from_pick_pose_green_to_pre_pose_green}" />
+            <ExecuteMotion trajectory="{from_pre_pose_green_to_prerelease_pose_green}" />
+            <ExecuteMotion trajectory="{from_prerelease_pose_green_to_release_pose_green}" />
+            <ExecuteMotion trajectory="{from_release_pose_green_to_prerelease_pose_green}" />
+
+        </Sequence>
+    </BehaviorTree>
+
+   
+
+</root>

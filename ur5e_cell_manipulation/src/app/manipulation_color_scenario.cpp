@@ -1,6 +1,3 @@
-#include <cstdio>
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/moveit_cpp/moveit_cpp.h>
 #include <moveit/moveit_cpp/planning_component.h>
@@ -10,10 +7,14 @@
 #include "ur5e_cell_manipulation/execute_motion_node.hpp"
 #include "ur5e_cell_manipulation/gripper_node.hpp"
 #include "ur5e_cell_manipulation/set_pose_node.hpp"
-#include "ur5e_cell_manipulation/behavior_tree/detect_color_unique_node.hpp"
-#include "ur5e_cell_manipulation/manipulation_color_unique_scenario.hpp"
+#include "ur5e_cell_manipulation/detect_aruco_node.hpp"
+#include "ur5e_cell_manipulation/detect_color_node.hpp"
+#include "ur5e_cell_manipulation/manipulation_color_detection.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
+
+
+
 
 ManipulationBehaviorManager::ManipulationBehaviorManager(rclcpp::Node::SharedPtr node, std::string planning_group)
   : node_(node), planning_group_(planning_group)
@@ -24,7 +25,7 @@ ManipulationBehaviorManager::ManipulationBehaviorManager(rclcpp::Node::SharedPtr
   factory_ = std::make_shared<BT::BehaviorTreeFactory>();
   node_->declare_parameter(
       "behavior_file",
-      ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/color_unique_bt.xml"));
+      ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/behavior.xml"));
 }
 void ManipulationBehaviorManager::start_behavior()
 {
@@ -48,6 +49,9 @@ void ManipulationBehaviorManager::start_behavior()
   BT::NodeBuilder set_pose_builder = [](const std::string& name, const BT::NodeConfiguration& config) {
     return std::make_unique<SetPoseNode>(name, config);
   };
+  BT::NodeBuilder aruco_detector_builder = [](const std::string& name, const BT::NodeConfiguration& config) {
+    return std::make_unique<DetectArucoNode>(name, config);
+  };
   BT::NodeBuilder color_detector_builder = [](const std::string& name, const BT::NodeConfiguration& config) {
     return std::make_unique<DetectColorNode>(name, config);
   };
@@ -58,6 +62,7 @@ void ManipulationBehaviorManager::start_behavior()
     factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", exec_builder);
     factory_->registerBuilder<GripperActionNode>("GripperAction", gripper_builder);
     factory_->registerBuilder<SetPoseNode>("SetPose", set_pose_builder);
+    factory_->registerBuilder<DetectArucoNode>("GetPickFromAruco", aruco_detector_builder);
     factory_->registerBuilder<DetectColorNode>("GetPickFromColor", color_detector_builder);
   }
   catch (std::exception& e)
@@ -75,26 +80,4 @@ void ManipulationBehaviorManager::start_behavior()
     tree_->rootNode()->executeTick();
     rclcpp::sleep_for(std::chrono::milliseconds(1));
   }
-}
-
-int main(int argc, char** argv)
-{
-  rclcpp::init(argc, argv);
-  rclcpp::NodeOptions options;
-  options.automatically_declare_parameters_from_overrides(true);
-  auto node = rclcpp::Node::make_shared("robot_program_node", "", options);
-  rclcpp::executors::SingleThreadedExecutor executor;
-
-  auto spin_thread = std::make_unique<std::thread>([&executor, &node]() {
-    executor.add_node(node->get_node_base_interface());
-    executor.spin();
-    executor.remove_node(node->get_node_base_interface());
-  });
-  rclcpp::sleep_for(std::chrono::seconds(1));
-  ManipulationBehaviorManager manager(node, "arm");
-  manager.start_behavior();
-  rclcpp::sleep_for(std::chrono::seconds(4));
-  rclcpp::shutdown();
-  spin_thread->join();
-  return 0;
 }

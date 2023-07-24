@@ -10,8 +10,8 @@
 #include "ur5e_cell_manipulation/execute_motion_node.hpp"
 #include "ur5e_cell_manipulation/gripper_node.hpp"
 #include "ur5e_cell_manipulation/set_pose_node.hpp"
-#include "ur5e_cell_manipulation/behavior_tree/detect_color_unique_node.hpp"
-#include "ur5e_cell_manipulation/manipulation_color_unique_scenario.hpp"
+#include "ur5e_cell_manipulation/behavior_tree/detect_color_array_node.hpp"
+#include "ur5e_cell_manipulation/manipulation_color_scenario.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
 
@@ -24,7 +24,7 @@ ManipulationBehaviorManager::ManipulationBehaviorManager(rclcpp::Node::SharedPtr
   factory_ = std::make_shared<BT::BehaviorTreeFactory>();
   node_->declare_parameter(
       "behavior_file",
-      ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/color_unique_bt.xml"));
+      ament_index_cpp::get_package_share_directory("ur5e_cell_manipulation").append("/config/color_array_bt.xml"));
 }
 void ManipulationBehaviorManager::start_behavior()
 {

@@ -10,14 +10,14 @@ def detect(img):
     hsv_frame = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     # specify yellow range that should be detected
-    low_yellow = np.array([15, 50, 100])
+    low_yellow = np.array([15, 20, 180])
     high_yellow = np.array([35, 255, 255])
     yellow_mask = cv2.inRange(hsv_frame, low_yellow, high_yellow)
     yellow = cv2.bitwise_and(img, img, mask=yellow_mask)
     masked_img_yellow = yellow_mask.astype(np.uint8)
 
     # specify blue range that should be detected
-    low_blue = np.array([90, 50, 80])
+    low_blue = np.array([100, 70, 80])
     high_blue = np.array([130, 255, 255])
     blue_mask = cv2.inRange(hsv_frame, low_blue, high_blue)
     blue = cv2.bitwise_and(img, img, mask=blue_mask)
@@ -35,8 +35,8 @@ def detect(img):
     masked_img_red = red_mask.astype(np.uint8)
 
     # specify green range that should be detected
-    low_green = np.array([36, 30, 100])
-    high_green = np.array([85, 255, 255])
+    low_green = np.array([40, 30, 110])
+    high_green = np.array([80, 255, 255])
     green_mask = cv2.inRange(hsv_frame, low_green, high_green)
     green = cv2.bitwise_and(img, img, mask=green_mask)
     masked_img_green = green_mask.astype(np.uint8)
@@ -157,7 +157,7 @@ def detect(img):
     color_array=(ll_rect_green, l_rect_green, ll_rect_blue, l_rect_blue,ll_rect_red, l_rect_red,ll_rect_yellow, l_rect_yellow)
     
         
-    cv2.imshow("Masks", img)
-    key = cv2.waitKey(1)
+    #cv2.imshow("Masks", img)
+    #key = cv2.waitKey(1)
 
-    return color_array
+    return color_array, img

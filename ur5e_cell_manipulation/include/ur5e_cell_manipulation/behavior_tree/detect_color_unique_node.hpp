@@ -37,7 +37,7 @@ public:
   {
     node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     RCLCPP_INFO(node_->get_logger(), "Initialising Execute Node.");
-    sleep(1.0);
+    sleep(0.3);
 
     // pose_ = node_->create_subscription<color_pose_msgs::msg::ColorPose>(
     //     "color_pose_estimation/color_pose", 30,
@@ -77,22 +77,16 @@ public:
     RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
 
     return BT::NodeStatus::RUNNING;
-
   }
-
-
 
   BT::NodeStatus onRunning() override
   {
     RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
-
     geometry_msgs::msg::PoseStamped pre_pose, pick_pose, transformed_pose, final_pose;
     tf2::Quaternion q;
-
     transformed_pose.pose.position.x = 0;
     transformed_pose.pose.position.y = 0;
     transformed_pose.pose.position.z = 0;
-
     transformed_pose.pose.orientation.x = 0;
     transformed_pose.pose.orientation.y = 0;
     transformed_pose.pose.orientation.z = 0;
@@ -116,7 +110,7 @@ public:
     {
       try
       {
-        rclcpp::sleep_for(std::chrono::milliseconds(700));
+        rclcpp::sleep_for(std::chrono::milliseconds(100));
 
         t = tf_buffer_->lookupTransform(toFrameRel, fromFrameRel, tf2::TimePointZero, tf2::durationFromSec(1));
 
